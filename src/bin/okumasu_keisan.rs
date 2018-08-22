@@ -54,11 +54,73 @@ impl std::ops::Drop for ContestPrinter {
 }
 static MOD: i64 = 1e9 as i64 + 7;
 fn is_max_i64(num: i64) -> bool {
-    num == i64::max_value()
+    if num == i64::max_value() {
+        true
+    } else {
+        false
+    }
+}
+
+pub trait BinarySearch<T> {
+    fn lower_bound(&self, &T) -> usize;
+    fn upper_bound(&self, &T) -> usize;
+}
+impl<T: Ord> BinarySearch<T> for [T] {
+    fn lower_bound(&self, x: &T) -> usize {
+        let mut low = 0;
+        let mut high = self.len();
+        while low != high {
+            let mid = (low + high) / 2;
+            match self[mid].cmp(x) {
+                Ordering::Less => {
+                    low = mid + 1;
+                }
+                Ordering::Equal | Ordering::Greater => {
+                    high = mid;
+                }
+            }
+        }
+        low
+    }
+    fn upper_bound(&self, x: &T) -> usize {
+        let mut low = 0;
+        let mut high = self.len();
+        while low != high {
+            let mid = (low + high) / 2;
+            match self[mid].cmp(x) {
+                Ordering::Less | Ordering::Equal => {
+                    low = mid + 1;
+                }
+                Ordering::Greater => {
+                    high = mid;
+                }
+            }
+        }
+        low
+    }
 }
 
 fn main() {
     let mut pr = ContestPrinter::new();
-   
-   
+    let (N, K) = readl!(usize, usize);
+    let mut va = readlvec!(i64); va.sort();
+    let mut vb = readlvec!(i64); vb.sort();
+    
+    let (mut lb, mut ub): (i64, i64) = (-1, va[N-1] as i64 * vb[N-1] as i64 + 2);
+    while (ub - lb) > 1 {
+        let mid = (ub + lb) / 2;
+        let mut cnt = 0;
+        for i in 0..N {
+            let num = mid / va[i] + 1;
+            let b = vb.lower_bound(&num);
+            cnt += b;
+        }
+        if cnt >= K {
+            ub = mid;
+        } else {
+            lb = mid;
+        }
+    }
+    
+    pr.println(ub);
 }
