@@ -1,0 +1,6 @@
+[package]
+name = "competitive_programming"
+version = "0.1.0"
+authors = ["内糸春樹 <vixen_star_fox@yahoo.co.jp>"]
+
+[dependencies]
